@@ -1,0 +1,41 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model categoria {
+  id   Int    @id @default(autoincrement())
+  nome String @db.VarChar(100)
+  show show[] @relation("categoriatoshow")
+}
+
+model perfil {
+  id         Int      @id @default(autoincrement())
+  nome       String   @db.VarChar(45)
+  nascimento DateTime
+  bio        String   @db.VarChar(255)
+  fotoPerfil String
+  usuario    usuario?
+  show       show[]   @relation("perfiltoshow")
+}
+
+model show {
+  id        Int         @id @default(autoincrement())
+  nome      String      @db.VarChar(255)
+  status    String
+  categoria categoria[] @relation("categoriatoshow")
+  perfil    perfil[]    @relation("perfiltoshow")
+}
+
+model usuario {
+  id       Int     @id @default(autoincrement())
+  email    String  @unique(map: "Usuario_email_key") @db.VarChar(45)
+  senha    String  @db.VarChar(45)
+  role     Boolean
+  perfil   Perfil  @relation(fields: [perfilId], references: [id], onDelete: Cascade)
+  perfilId Int     @unique(map: "Usuario_perfilId_key")
+}
